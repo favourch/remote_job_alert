@@ -31,8 +31,8 @@
     text-align: center;
   }
 
-  #homepage main div.intro-img {
-      width: 120px !important
+  #homepage main div.intro-img img {
+      width: 80% !important;
   }
 }
 
