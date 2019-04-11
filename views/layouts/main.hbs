@@ -5,23 +5,122 @@
 <head>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>{{title}}</title>
-  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T"
-    crossorigin="anonymous">
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+    integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
   <link href="https://fonts.googleapis.com/css?family=Work+Sans" rel="stylesheet">
-  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.1/css/all.css" integrity="sha384-50oBUHEmvpQ+1lW4y57PTFmhCaXp0ML5d60M1M7uH2+nqUivzIebhndOJK28anvf"
-    crossorigin="anonymous">
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.1/css/all.css"
+    integrity="sha384-50oBUHEmvpQ+1lW4y57PTFmhCaXp0ML5d60M1M7uH2+nqUivzIebhndOJK28anvf" crossorigin="anonymous">
   <link rel='stylesheet' href='/stylesheets/style.css' />
 </head>
 
 <body>
   {{{body}}}
   <!-- scripts -->
-  <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
+  <script src="http://code.jquery.com/jquery-3.3.1.min.js" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"
+    integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1"
     crossorigin="anonymous"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1"
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
+    integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
     crossorigin="anonymous"></script>
-  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
-    crossorigin="anonymous"></script>
+
+
+  <script>
+    $(function () {
+      var jobs = null; // To store all jobs
+      var load = 0;
+
+      $.ajax({
+        url: "/jobs",
+        async: false,
+        success: function (data) {
+          jobs = data;
+          let qty_to_load = ((load + 10) > jobs.length) ? (jobs.length - load) : 10;
+          for (let i = load; i < (load + qty_to_load); i++) {
+            let job = jobs[i];
+
+            if (job.company_name.toLowerCase() == "microsoft") {
+              job.advert_header = "images/ms.png";
+            } else if (job.company_name.toLowerCase() == "google") {
+              job.advert_header = "https://img.icons8.com/color/29/000000/google-logo.png";
+            } else {
+              debugger;
+              job.advert_header = "https://img.icons8.com/ios-glyphs/29/000000/organization.png";
+            }
+            let job_html = "<ul data-id=" + job._id + " class='job col-sm-5'><li><img src=" + job.advert_header + " alt=" + job.company_name + " /></li><li><p>" + job.job_title + "</p></li><li><a class='view-more' href='#' data-toggle='modal' data-target='#jobModal'><p>view<img src='images/Arrow.png' /></p></a></li></ul>";
+            $(".jobs").append(job_html);
+
+            if (load >= jobs.length) {
+              $("#load_listings").html("No more listings!");
+              $("#load_listings").attr("disabled", true);
+            }
+          }
+
+          load += qty_to_load;
+
+        }
+      });
+
+
+      $("#load_listings").on('click', function () {
+
+        if (load < jobs.length) {
+          // add 4 more jobs to the homepage
+          let qty_to_load = ((load + 10) > jobs.length) ? (jobs.length - load) : 10;
+          for (let i = load; i < (load + qty_to_load); i++) {
+            let job = jobs[i];
+            if (job.company_name.toLowerCase() == "microsoft") {
+              job.advert_header = "images/ms.png";
+            } else if (job.company_name.toLowerCase() == "google") {
+              job.advert_header = "https://img.icons8.com/color/29/000000/google-logo.png";
+            } else {
+              debugger;
+              job.advert_header = "https://img.icons8.com/ios-glyphs/29/000000/organization.png";
+            }
+            let job_html = "<ul data-id=" + job._id + " class='job col-sm-5'><li><img src=" + job.advert_header + " alt=" + job.company_name + " /></li><li><p>" + job.job_title + "</p></li><li><a class='view-more' href='#' data-toggle='modal' data-target='#jobModal'><p>view<img src='images/Arrow.png' /></p></a></li></ul>";
+            $(".jobs").append(job_html);
+
+            if (load >= jobs.length) {
+              $("#load_listings").html("No more listings!");
+              $("#load_listings").attr("disabled", true);
+            }
+          }
+          load += qty_to_load;
+
+        } else {
+          $("#load_listings").html("No more listings!");
+          $("#load_listings").attr("disabled", true);
+        }
+
+      });
+
+      $(".jobs").on('click', ".view-more", function () {
+
+        job_id = $(this).parent().parent().attr("data-id");
+        let job = null;
+        for (let n = 0; n < jobs.length; n++) {
+          if (jobs[n]._id === job_id) {
+            job = jobs[n];
+            break;
+          }
+        }
+
+
+        if (!job.career_level) { job.career_level = "" }
+        $("#job-title").html(job.job_title.toUpperCase() + " " + job.career_level)
+        $("#company-name").html(job.company_name.toUpperCase())
+        if (!job.job_link) { job.job_link = "" }
+        if (!job.job_category) { job.job_category = "" }
+        if (!job.job_pay_max) { job.job_pay_max = "" }
+        if (!job.job_pay_min) { job.job_pay_min = "" }
+        if (!job.employer_email) { job.employer_email = "" }
+        if (!job.location) { job.location = "" }
+        let job_description_string = job.company_name.toUpperCase() + " is hiring!<br/>Category: " + job.job_category + "<br/>Description: " + job.job_description + "<br/>Location: " + job.location + "<br/>Mail us:" + job.employer_email + "<br/> Salary: " + job.job_pay_min + " - " + job.job_pay_max + "<br/>Link: <a href='" + job.job_link + "'>" + job.job_link + "</a>";
+        $("#job-description").html(job_description_string)
+      });
+    });
+
+  </script>
 </body>
 
 </html>
